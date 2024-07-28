@@ -1,10 +1,12 @@
 import waitPort from "wait-port";
-import { Sequelize } from "sequelize";
+import { Sequelize } from "sequelize-typescript";
 import config from "../config";
+import path from 'path';
 
 export const sequelize = new Sequelize(config.database.name, config.database.username, config.database.password, {
     host: config.database.host,
-    dialect: 'mysql'
+    dialect: 'mysql',
+    models: [path.join(__dirname, 'models')]
 });
 
 export async function dbConnect(): Promise<void> {

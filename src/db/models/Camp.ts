@@ -1,36 +1,54 @@
-import { sequelize } from "../database";
-import { DataTypes } from "sequelize";
+import { Table, Model, Column, PrimaryKey, DataType, AutoIncrement, Index, Default } from "sequelize-typescript";
+@Table({
+    timestamps: true,
+    tableName: "Camps",
+    modelName: "Camp"
+})
+export class Camp extends Model {
+    @PrimaryKey
+    @AutoIncrement
+    @Column({
+        type: DataType.INTEGER,
+    })
+    id!: number;
 
-export const Camp = sequelize.define(
-    "Camps",
-    {
-        id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            primaryKey: true
-        },
-        link: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        topic: {
-            type: DataTypes.STRING,
-        },
-        imageUrl: {
-            type: DataTypes.TEXT,
-            allowNull: false
-        },
-        deadline: {
-            type: DataTypes.DATE,
-        },
-        isActive: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: true
-        }
-    },
-    {
-        timestamps: true,
-        updatedAt: false 
-    }
-)
+    @Index
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+        unique: true,
+    })
+    hashLink!: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+    })
+    link!: string;
+    
+    @Column(DataType.STRING)
+    topic?: string;
+    
+    @Column({
+        type: DataType.TEXT,
+        allowNull: false,
+    })
+    imageUrl!: string;
+    
+    @Column(DataType.DATE)
+    deadline?: Date;
+    
+    @Default(true)
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+    })
+    isActive!: boolean;
+    
+    @Index
+    @Column
+    updatedAt!: Date;
+
+    @Column
+    createdAt!: Date;
+}
