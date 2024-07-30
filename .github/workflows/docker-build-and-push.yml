@@ -37,5 +37,5 @@ jobs:
 
     - name: Build and push activities-data image
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/activities-data:latest -f activities-data/Dockerfile activities-data
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/activities-data:latest -f Dockerfile .
         docker push ${{ secrets.DOCKER_USERNAME }}/activities-data:latest
