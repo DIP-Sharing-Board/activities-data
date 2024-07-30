@@ -13,10 +13,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: List files in the repository
-      run: |
-        ls -al  # List files and directories to verify presence of activities-data
-
     - name: Set up Node.js for activities-data
       uses: actions/setup-node@v3
       with:
@@ -24,12 +20,10 @@ jobs:
 
     - name: Install dependencies for activities-data
       run: |
-        cd activities-data
         npm install
 
     - name: Compile TypeScript for activities-data
       run: |
-        cd activities-data
         npm run build  # Assuming you have a build script in your package.json that runs `tsc`
 
     - name: Set up Docker Buildx
