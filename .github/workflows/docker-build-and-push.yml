@@ -20,12 +20,10 @@ jobs:
 
     - name: Install dependencies for activities-data
       run: |
-        cd activities-data
         npm install
 
     - name: Compile TypeScript for activities-data
       run: |
-        cd activities-data
         npm run build  # Assuming you have a build script in your package.json that runs `tsc`
 
     - name: Set up Docker Buildx
@@ -39,5 +37,5 @@ jobs:
 
     - name: Build and push activities-data image
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/activities-data:latest -f activities-data/Dockerfile activities-data
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/activities-data:latest -f Dockerfile .
         docker push ${{ secrets.DOCKER_USERNAME }}/activities-data:latest
