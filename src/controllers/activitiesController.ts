@@ -4,22 +4,21 @@ import { Other } from '../db/models/Other';
 import { Camp } from '../db/models/Camp';
 import { Op } from 'sequelize';
 
-// /api/v1/activities/?type=other&lastId=0
+// Function to validate ISO 8601 date strings
+const isValidISODate = (dateString: string): boolean => {
+    const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+    return iso8601Regex.test(dateString);
+}
 
+// /api/v1/activities/?type=other&updatedAt=2024-07-30T15:12:12.000Z
 // get
 const getActivities = async (req: Request, res: Response) => {
+    const { type, updatedAt } = req.query
 
-    const lastId: number = (req.query.lastId === undefined) ? 0: parseInt(req.query.lastId as string)
-    // Invalid format response
-    if (isNaN(lastId)) {
-        return res.status(400).json({
-            code: 400,
-            message: 'Invalid format for lastId'
-        });
-    }
+    const Type = (type === "other") ? Other :
+                (type === "competition") ? Competition :
+                (type === "camp") ? Camp : null
 
-    const { type } = req.query
-    const Type = (type === "other") ? Other : (type === "competition") ? Competition : (type === "camp") ? Camp : null
     if (Type === null) {
         // Invalid Type response
         return res.status(400).json({
@@ -27,16 +26,30 @@ const getActivities = async (req: Request, res: Response) => {
             message: `Invalid type ${type}`
         });
     }
+
+    const whereCondition: any = {
+        isActive: true // Filter based on isActive
+    }
+    
+    // Invalid format response
+    if (updatedAt !== undefined) {
+        if (!isValidISODate(String(updatedAt))) {
+            return res.status(400).json({
+                code: 400,
+                message: 'Invalid format for updatedAt'
+            });
+        }
+
+        whereCondition.updatedAt = {
+            [Op.gt]: new Date(String(updatedAt))
+        }
+    } 
+
     
     try {
         const data = await Type.findAll({
-            where: {
-                id: {
-                    [Op.gt]: lastId
-                },
-                isActive: true // Filter based on isActive
-            },
-            attributes: ['id', 'link', 'topic', 'imageUrl', 'deadline'], // Specify the columns to return
+            where: whereCondition,
+            attributes: ['id', 'link', 'topic', 'imageUrl', 'deadline', 'updatedAt'], // Specify the columns to return
             limit: 20, // Limit the results to 20 records
             order: [['updatedAt', 'DESC']] // Order by updatedAt in descending order (most recently updated first)
         });
